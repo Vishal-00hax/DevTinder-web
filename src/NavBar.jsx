@@ -3,9 +3,17 @@ function NavBar () {
         <>
          <div data-theme="abyss" className="bg-base-200">
       <div className="navbar bg-base-100 shadow-sm px-4">
-        <div className="flex-1">
+        <div className="flex-1 flex items-center gap-2">
+          <div className="btn btn-ghost btn-circle avatar">
+            <div className="w-10 rounded-full">
+              <img
+                alt="DevTinder Logo"
+                src="/favicon.svg"
+              />
+            </div>
+          </div>
           <a className="btn btn-ghost text-xl">
-            daisyUI
+            DevTinder
           </a>
         </div>
         <div className="flex gap-2 items-center">
