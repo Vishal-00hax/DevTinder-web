@@ -1,13 +1,22 @@
 import NavBar from "./NavBar"
+import {Routes,Route} from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import Body from "./Body";
+import Login from "./components/Login";
+import Profile from "./components/Profile";
+import Footer from "./Footer";
 
 function App() {
 
   return (
-    <>
-    <NavBar />
-      <div data-theme="abyss" className="bg-base-200 h-screen flex items-center justify-center">
-        <h1 className="text-3xl font-bold">Hello world </h1>
-      </div>
+    <>   
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Body />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+      <Footer />
     </>
   )
 }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import BrandLogo from './components/BrandLogo';
-import NavBar from './NavBar';
 
-const HomePage = () => {
+
+const Body = () => {
   // Sample developer profile data
   const [currentProfile, setCurrentProfile] = useState({
     name: "Sarah Jenkins",
@@ -24,7 +24,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col font-sans">
-      <NavBar />
+   
       {/* Main Content */}
       <main className="grow flex items-center justify-center p-4">
         {/* Profile Card */}
@@ -88,4 +88,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Body;
