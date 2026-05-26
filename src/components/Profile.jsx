@@ -7,6 +7,9 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditPassword , setIsEditPassword] = useState(false);
+  const [oldPassword , setOldPassword] = useState("");
+  const [newPassword , setNewPassword] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,14 +33,16 @@ function Profile() {
       navigate("/login")
     } catch (err) {
       console.log("LogOut Error: ", err.response?.data || err.message);
+    
     }
   };
 
   const handleSave = async (e) => {
     e.preventDefault(); 
 
-    // 1. Grab all data directly from the form inputs
+    // This line looks at the entire HTML <form> element (e.target)
     const formData = new FormData(e.target);
+    // This turns everything inside the form into a neat JavaScript object
     const formValues = Object.fromEntries(formData.entries());
 
     // 2. Format the payload precisely to match backend requirements
@@ -62,6 +67,16 @@ function Profile() {
       
     }
   };
+
+  const handleChangePassword = async () => {
+    try{
+      const res = await axios.patch("http://localhost:7777/profile/password",{oldPassword,newPassword}, {withCredentials: true});
+      console.log("Password Change Success: ", res.data);
+      setIsEditPassword(false);
+    }catch(err){
+      console.log("Error During Change Password: ", err.response?.data || err.message);
+    }
+  }
 
   if (loading) {
     return (
@@ -204,13 +219,45 @@ function Profile() {
                 <button className="btn btn-outline btn-primary w-full sm:w-auto" onClick={() => setIsEditing(true)}>
                   Edit Profile
                 </button>
-                <button className="btn btn-error w-full sm:w-auto" onClick={handleLogout}>
-                  Sign Out
+                  <button className="btn btn-outline btn-primary w-full sm:w-auto" onClick={() => setIsEditPassword(true)}>
+                  Change Password
+                </button>
+                 <button className="btn btn-error w-full sm:w-auto" onClick={handleLogout}>
+                  Log Out
                 </button>
               </div>
             </div>
           )}
-          
+
+          {isEditPassword && (
+  <div className="mt-6 border-t border-base-300 pt-6">
+    <h2 className="text-2xl font-bold mb-6">Change Password</h2>
+    
+    <input 
+      type="password" 
+      placeholder="Old password" 
+      value={oldPassword} 
+      onChange={(e) => setOldPassword(e.target.value)} 
+      className="input input-bordered w-full mb-4" 
+    />
+    
+    <input 
+      type="password" 
+      placeholder="New password" 
+      value={newPassword} 
+      onChange={(e) => setNewPassword(e.target.value)} 
+      className="input input-bordered w-full mb-4" 
+    />
+    <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+      <button className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditPassword(false)}>
+        Cancel
+      </button>
+      <button className="btn btn-primary w-full sm:w-auto" onClick={handleChangePassword}>
+        Change Password
+      </button>
+    </div>
+  </div>
+)}  
         </div>
       </div>
     </div>
