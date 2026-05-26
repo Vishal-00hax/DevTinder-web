@@ -1,10 +1,12 @@
 import React from 'react'
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 const Login = () => {
   const [emailId , setEmailId] = useState("");
   const [password , setPassword] = useState("");
+  const navigate = useNavigate();
 
 const handleLogin = async () => {
 
@@ -16,6 +18,7 @@ const handleLogin = async () => {
         password,
       },
       { withCredentials: true },
+      navigate("/")
     );
     console.log("SUCCESS:", res.data);
   } catch (err) {
