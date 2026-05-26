@@ -7,9 +7,12 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving , setIsSaving] = useState(false);
   const [isEditPassword , setIsEditPassword] = useState(false);
   const [oldPassword , setOldPassword] = useState("");
   const [newPassword , setNewPassword] = useState("");
+  const [isPasswordChanging , setIsPasswordChanging] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,7 +42,8 @@ function Profile() {
 
   const handleSave = async (e) => {
     e.preventDefault(); 
-
+    if(isSaving) return; // Prevent multiple submissions Lock the button
+    setIsSaving(true);
     // This line looks at the entire HTML <form> element (e.target)
     const formData = new FormData(e.target);
     // This turns everything inside the form into a neat JavaScript object
@@ -63,18 +67,23 @@ function Profile() {
       setProfileData(res.data.data || res.data); 
       setIsEditing(false); // Close edit mode
     } catch (err) {
-      console.log("Error During Edit Profile: ", err.response?.data || err.message);
-      
+      console.log("Error During Edit Profile: ", err.response?.data || err.message); 
+    }finally{
+      setIsSaving(false); // Unlock the button after request completes
     }
   };
 
   const handleChangePassword = async () => {
     try{
+      if(isPasswordChanging) return; // Prevent double clicking
+      setIsPasswordChanging(true);
       const res = await axios.patch("http://localhost:7777/profile/password",{oldPassword,newPassword}, {withCredentials: true});
       console.log("Password Change Success: ", res.data);
       setIsEditPassword(false);
     }catch(err){
       console.log("Error During Change Password: ", err.response?.data || err.message);
+    }finally{
+      setIsPasswordChanging(false);
     }
   }
 
@@ -160,8 +169,10 @@ function Profile() {
                 <button type="button" className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditing(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary w-full sm:w-auto">
-                  Save Changes
+                <button type="submit" 
+                disabled={isSaving}
+                className="btn btn-primary w-full sm:w-auto">
+                 {isSaving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -252,8 +263,11 @@ function Profile() {
       <button className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditPassword(false)}>
         Cancel
       </button>
-      <button className="btn btn-primary w-full sm:w-auto" onClick={handleChangePassword}>
-        Change Password
+      <button className="btn btn-primary w-full sm:w-auto" 
+      onClick={handleChangePassword}
+      disabled={isPasswordChanging}
+      >
+       {isPasswordChanging ? 'Changing...' : 'Change Password'}
       </button>
     </div>
   </div>
