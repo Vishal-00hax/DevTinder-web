@@ -22,6 +22,14 @@ function Profile() {
   fetchProfileData();
   },[])
 
+  const handleLogout = async () => {
+    try{
+      const res = await axios.post("http://localhost:7777/logout", {} , { withCredentials:true } )
+    }catch(err){
+      console.log("LogOut Erorr: ", err.respoinse?.data || err.messagre);
+    }
+  }
+ 
   if(loading){
     return (
       <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200">
@@ -113,7 +121,7 @@ function Profile() {
             <button className="btn btn-outline btn-primary w-full sm:w-auto">
               Edit Profile
             </button>
-            <button className="btn btn-error w-full sm:w-auto">
+            <button className="btn btn-error w-full sm:w-auto" onClick={handleLogout}>
               Sign Out
             </button>
           </div>
