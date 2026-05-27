@@ -1,22 +1,21 @@
-import NavBar from "./NavBar"
+
 import {Routes,Route} from 'react-router-dom';
-import {Link} from 'react-router-dom';
+
 import Body from "./Body";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
-import Footer from "./Footer";
 
 function App() {
 
   return (
     <>   
-      <NavBar />
       <Routes>
-        <Route path="/" element={<Body />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route element={<Body />}>
+          <Route path="/" element={<div>Home Page</div>} />
+          <Route path="login" element={<Login />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Routes>
-      <Footer />
     </>
   )
 }

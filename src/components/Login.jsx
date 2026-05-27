@@ -20,7 +20,7 @@ const handleLogin = async () => {
       { withCredentials: true },
       navigate("/")
     );
-    console.log("SUCCESS:", res.data);
+    console.log("Login Successfull:", res.data);
   } catch (err) {
 
     console.log("BACKEND ERROR:",err.response?.data || err.message);
