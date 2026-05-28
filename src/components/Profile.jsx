@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../utils/constents';
 
 function Profile() {
   const [profileData, setProfileData] = useState(null);
@@ -18,7 +19,7 @@ function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await axios.get("http://localhost:7777/profile/view", { withCredentials: true });
+        const res = await axios.get(BASE_URL+"/profile/view", { withCredentials: true });
         setProfileData(res.data);
       } catch (err) {
         console.log("Error:", err.response?.data || err.message);
@@ -32,8 +33,8 @@ function Profile() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:7777/logout", {}, { withCredentials: true });
-      navigate("/login")
+      await axios.post("/logout", {}, { withCredentials: true });
+      navigate(BASE_URL+"/login")
     } catch (err) {
       console.log("LogOut Error: ", err.response?.data || err.message);
     
@@ -61,7 +62,7 @@ function Profile() {
     };
 
     try {
-      const res = await axios.patch("http://localhost:7777/profile/edit", payload, { withCredentials: true });
+      const res = await axios.patch(BASE_URL+"/profile/edit", payload, { withCredentials: true });
       
       // Update UI with the new data from the backend response
       setProfileData(res.data.data || res.data); 
@@ -77,7 +78,7 @@ function Profile() {
     try{
       if(isPasswordChanging) return; // Prevent double clicking
       setIsPasswordChanging(true);
-      const res = await axios.patch("http://localhost:7777/profile/password",{oldPassword,newPassword}, {withCredentials: true});
+      const res = await axios.patch(BASE_URL+"/profile/password",{oldPassword,newPassword}, {withCredentials: true});
       console.log("Password Change Success: ", res.data);
       setIsEditPassword(false);
     }catch(err){
