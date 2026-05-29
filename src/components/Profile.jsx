@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../utils/constents';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { addUser,removeUser } from '../utils/userSlice';
 
 function Profile() {
-  const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const profileData = useSelector(store => store.user);
+  console.log("User from NavBar:", profileData); 
+
+  const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving , setIsSaving] = useState(false);
   const [isEditPassword , setIsEditPassword] = useState(false);
@@ -16,28 +20,13 @@ function Profile() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const res = await axios.get(BASE_URL+"/profile/view", { withCredentials: true });
-        setProfileData(res.data);
-      } catch (err) {
-        console.log("Error:", err.response?.data || err.message);
-        setError(err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfileData();
-  }, []);
-
   const handleLogout = async () => {
     try {
-      await axios.post("/logout", {}, { withCredentials: true });
-      navigate(BASE_URL+"/login")
+      await axios.post(BASE_URL+"/logout", {}, { withCredentials: true });
+      dispatch(removeUser())
+      navigate("/login")
     } catch (err) {
       console.log("LogOut Error: ", err.response?.data || err.message);
-    
     }
   };
 
@@ -65,7 +54,8 @@ function Profile() {
       const res = await axios.patch(BASE_URL+"/profile/edit", payload, { withCredentials: true });
       
       // Update UI with the new data from the backend response
-      setProfileData(res.data.data || res.data); 
+      const updatedProfile = res.data.data || res.data;
+      dispatch(addUser(updatedProfile)); // Update Redux store with new profile data
       setIsEditing(false); // Close edit mode
     } catch (err) {
       console.log("Error During Edit Profile: ", err.response?.data || err.message); 
@@ -80,6 +70,8 @@ function Profile() {
       setIsPasswordChanging(true);
       const res = await axios.patch(BASE_URL+"/profile/password",{oldPassword,newPassword}, {withCredentials: true});
       console.log("Password Change Success: ", res.data);
+      setOldPassword("");
+      setNewPassword("");
       setIsEditPassword(false);
     }catch(err){
       console.log("Error During Change Password: ", err.response?.data || err.message);
@@ -88,19 +80,13 @@ function Profile() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    );
-  }
 
-  if (error || !profileData) {
+
+  if (!profileData) {
     return (
       <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200 px-4">
         <div className="alert alert-error max-w-md shadow-lg">
-          <span>{error || "Failed to load profile"}</span>
+          <span>{"Failed to load profile"}</span>
         </div>
       </div>
     );
