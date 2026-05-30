@@ -1,11 +1,13 @@
 import BrandLogo from './components/BrandLogo';
 import {Link} from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import useLogout from './hooks/useLogout';
 
 function NavBar () {
 
   const user = useSelector(store => store.user);
   //console.log("User from NavBar:", user);
+  const handleLogout = useLogout();
 
     return (
        <div className="navbar bg-base-100 shadow-sm px-4">
@@ -54,7 +56,9 @@ function NavBar () {
           </li>
 
           <li>
-            <button type="button">Logout</button>
+            <button type="button"
+            onClick={handleLogout}
+            >Logout</button>
           </li>
         </ul>
       </div>

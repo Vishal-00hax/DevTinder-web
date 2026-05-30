@@ -5,6 +5,7 @@ import { BASE_URL } from '../utils/constents';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { addUser,removeUser } from '../utils/userSlice';
+import useLogout from '../hooks/useLogout';
 
 function Profile() {
 const profileData = useSelector(store => store.user);
@@ -19,16 +20,7 @@ const profileData = useSelector(store => store.user);
   const [isPasswordChanging , setIsPasswordChanging] = useState(false);
 
   const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await axios.post(BASE_URL+"/logout", {}, { withCredentials: true });
-      dispatch(removeUser())
-      navigate("/login")
-    } catch (err) {
-      console.log("LogOut Error: ", err.response?.data || err.message);
-    }
-  };
+  const handleLogout = useLogout();
 
   const handleSave = async (e) => {
     e.preventDefault(); 

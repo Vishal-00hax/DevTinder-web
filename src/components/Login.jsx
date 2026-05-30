@@ -8,7 +8,8 @@ import { BASE_URL } from '../utils/constents';
 
 const Login = () => {
   const [emailId , setEmailId] = useState("");
-  const [password , setPassword] = useState("");
+  const [password , setPassword] = useState("")
+  const [error , setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,9 +28,8 @@ const handleLogin = async () => {
     navigate("/")
     console.log("Login Successfull:", res.data);
   } catch (err) {
-
-    console.log("BACKEND ERROR:",err.response?.data || err.message);
-
+    setError(err.response?.data || err.message);
+   
   }
 };
   return (
@@ -81,6 +81,7 @@ const handleLogin = async () => {
               Forgot password?
             </button>
           </div>
+          {error && <p className='text-center text-red-600'>{error}</p>}
           {/* Login Button */}
           <button className="btn btn-primary w-full" onClick={handleLogin}>
             Login
