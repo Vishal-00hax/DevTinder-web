@@ -1,84 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../utils/constents';
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { addUser,removeUser } from '../utils/userSlice';
+import { BASE_URL } from '../utils/constents';
 import useLogout from '../hooks/useLogout';
+import EditProfile from './EditProfile'; // Adjust path if needed
 
 function Profile() {
-const profileData = useSelector(store => store.user);
-  console.log("User from NavBar:", profileData); 
+  const profileData = useSelector(store => store.user);
 
-  const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving , setIsSaving] = useState(false);
-  const [isEditPassword , setIsEditPassword] = useState(false);
-  const [oldPassword , setOldPassword] = useState("");
-  const [newPassword , setNewPassword] = useState("");
-  const [isPasswordChanging , setIsPasswordChanging] = useState(false);
+  const [isEditPassword, setIsEditPassword] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isPasswordChanging, setIsPasswordChanging] = useState(false);
 
-  const navigate = useNavigate();
   const handleLogout = useLogout();
 
-  const handleSave = async (e) => {
-    e.preventDefault(); 
-    if(isSaving) return; // Prevent multiple submissions Lock the button
-    setIsSaving(true);
-    // This line looks at the entire HTML <form> element (e.target)
-    const formData = new FormData(e.target);
-    // This turns everything inside the form into a neat JavaScript object
-    const formValues = Object.fromEntries(formData.entries());
-
-    // 2. Format the payload precisely to match backend requirements
-    const payload = {
-      firstName: formValues.firstName,
-      lastName: formValues.lastName,
-      age: parseInt(formValues.age, 10) || 0, // Ensure integer
-      gender: formValues.gender,
-      photoUrl: formValues.photoUrl || "", 
-      // Convert comma-separated string back to an array
-      skills: formValues.skills ? formValues.skills.split(',').map(s => s.trim()).filter(Boolean) : [] 
-    };
-
-    try {
-      const res = await axios.patch(BASE_URL+"/profile/edit", payload, { withCredentials: true });
-      
-      // Update UI with the new data from the backend response
-      const updatedProfile = res.data.data || res.data;
-      dispatch(addUser(updatedProfile)); // Update Redux store with new profile data
-      setIsEditing(false); // Close edit mode
-    } catch (err) {
-      console.log("Error During Edit Profile: ", err.response?.data || err.message); 
-    }finally{
-      setIsSaving(false); // Unlock the button after request completes
-    }
-  };
-
   const handleChangePassword = async () => {
-    try{
-      if(isPasswordChanging) return; // Prevent double clicking
+    try {
+      if (isPasswordChanging) return; 
       setIsPasswordChanging(true);
-      const res = await axios.patch(BASE_URL+"/profile/password",{oldPassword,newPassword}, {withCredentials: true});
+      const res = await axios.patch(BASE_URL + "/profile/password", { oldPassword, newPassword }, { withCredentials: true });
       console.log("Password Change Success: ", res.data);
       setOldPassword("");
       setNewPassword("");
       setIsEditPassword(false);
-    }catch(err){
+    } catch (err) {
       console.log("Error During Change Password: ", err.response?.data || err.message);
-    }finally{
+    } finally {
       setIsPasswordChanging(false);
     }
-  }
-
-
+  };
 
   if (!profileData) {
     return (
       <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200 px-4">
         <div className="alert alert-error max-w-md shadow-lg">
-          <span>{"Failed to load profile"}</span>
+          <span>Failed to load profile</span>
         </div>
       </div>
     );
@@ -90,71 +48,11 @@ const profileData = useSelector(store => store.user);
         <div className="card-body">
           
           {isEditing ? (
-            /* EDIT MODE UI */
-            <form onSubmit={handleSave}>
-              <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
-              
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="form-control w-full">
-                  <label className="label"><span className="label-text">First Name</span></label>
-                  <input type="text" name="firstName" defaultValue={profileData.firstName} className="input input-bordered w-full" />
-                </div>
-                
-                <div className="form-control w-full">
-                  <label className="label"><span className="label-text">Last Name</span></label>
-                  <input type="text" name="lastName" defaultValue={profileData.lastName} className="input input-bordered w-full" />
-                </div>
-
-                <div className="form-control w-full">
-                  <label className="label"><span className="label-text">Age</span></label>
-                  <input type="number" name="age" defaultValue={profileData.age} className="input input-bordered w-full" />
-                </div>
-
-                <div className="form-control w-full">
-                  <label className="label"><span className="label-text">Gender</span></label>
-                  <select name="gender" defaultValue={profileData.gender} className="select select-bordered w-full">
-                    <option value="" disabled>Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Photo URL Input */}
-              <div className="form-control w-full mt-4">
-                <label className="label"><span className="label-text">Photo URL</span></label>
-                <input 
-                  type="url" 
-                  name="photoUrl" 
-                  defaultValue={profileData.photoUrl} 
-                  className="input input-bordered w-full" 
-                  placeholder="https://example.com/your-image.jpg"
-                />
-              </div>
-
-              <div className="form-control w-full mt-4">
-                <label className="label"><span className="label-text">Skills (Comma separated)</span></label>
-                <input 
-                  type="text" 
-                  name="skills" 
-                  defaultValue={profileData.skills?.join(', ')} 
-                  className="input input-bordered w-full" 
-                  placeholder="react, nodejs, mongodb"
-                />
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <button type="button" className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </button>
-                <button type="submit" 
-                disabled={isSaving}
-                className="btn btn-primary w-full sm:w-auto">
-                 {isSaving ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            /* --- RENDER THE NEW COMPONENT --- */
+            <EditProfile 
+              profileData={profileData} 
+              setIsEditing={setIsEditing} 
+            />
           ) : (
             /* --- VIEW MODE UI --- */
             <div>
@@ -209,10 +107,10 @@ const profileData = useSelector(store => store.user);
                 <button className="btn btn-outline btn-primary w-full sm:w-auto" onClick={() => setIsEditing(true)}>
                   Edit Profile
                 </button>
-                  <button className="btn btn-outline btn-primary w-full sm:w-auto" onClick={() => setIsEditPassword(true)}>
+                <button className="btn btn-outline btn-primary w-full sm:w-auto" onClick={() => setIsEditPassword(true)}>
                   Change Password
                 </button>
-                 <button className="btn btn-error w-full sm:w-auto" onClick={handleLogout}>
+                <button className="btn btn-error w-full sm:w-auto" onClick={handleLogout}>
                   Log Out
                 </button>
               </div>
@@ -220,37 +118,40 @@ const profileData = useSelector(store => store.user);
           )}
 
           {isEditPassword && (
-  <div className="mt-6 border-t border-base-300 pt-6">
-    <h2 className="text-2xl font-bold mb-6">Change Password</h2>
-    
-    <input 
-      type="password" 
-      placeholder="Old password" 
-      value={oldPassword} 
-      onChange={(e) => setOldPassword(e.target.value)} 
-      className="input input-bordered w-full mb-4" 
-    />
-    
-    <input 
-      type="password" 
-      placeholder="New password" 
-      value={newPassword} 
-      onChange={(e) => setNewPassword(e.target.value)} 
-      className="input input-bordered w-full mb-4" 
-    />
-    <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-      <button className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditPassword(false)}>
-        Cancel
-      </button>
-      <button className="btn btn-primary w-full sm:w-auto" 
-      onClick={handleChangePassword}
-      disabled={isPasswordChanging}
-      >
-       {isPasswordChanging ? 'Changing...' : 'Change Password'}
-      </button>
-    </div>
-  </div>
-)}  
+            <div className="mt-6 border-t border-base-300 pt-6">
+              <h2 className="text-2xl font-bold mb-6">Change Password</h2>
+              
+              <input 
+                type="password" 
+                placeholder="Old password" 
+                value={oldPassword} 
+                onChange={(e) => setOldPassword(e.target.value)} 
+                className="input input-bordered w-full mb-4" 
+              />
+              
+              <input 
+                type="password" 
+                placeholder="New password" 
+                value={newPassword} 
+                onChange={(e) => setNewPassword(e.target.value)} 
+                className="input input-bordered w-full mb-4" 
+              />
+              
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button className="btn btn-ghost w-full sm:w-auto" onClick={() => setIsEditPassword(false)}>
+                  Cancel
+                </button>
+                <button 
+                  className="btn btn-primary w-full sm:w-auto" 
+                  onClick={handleChangePassword}
+                  disabled={isPasswordChanging}
+                >
+                  {isPasswordChanging ? 'Changing...' : 'Change Password'}
+                </button>
+              </div>
+            </div>
+          )}  
+
         </div>
       </div>
     </div>
