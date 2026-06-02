@@ -10,7 +10,7 @@ function NavBar () {
   const handleLogout = useLogout();
 
     return (
-       <div className="navbar bg-base-100 shadow-sm px-4">
+       <div className="navbar bg-base-100 shadow-sm px-2 sm:px-4">
 
   {/* LEFT SIDE */}
   <div className="flex-1">
@@ -42,23 +42,25 @@ function NavBar () {
             />
           </div>
         </div>
-        <p>Welcome {user.firstName + " " + user.lastName}</p>
         <ul
           tabIndex={0}
-          className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow right-0"
+          className="dropdown-content menu bg-base-100 rounded-box z-50 w-48 sm:w-52 p-2 shadow"
         >
+          <li className="menu-title">
+            <span className="text-xs sm:text-sm line-clamp-2">
+              Welcome {user.firstName} {user.lastName}
+            </span>
+          </li>
           <li>
             <Link to="/profile">Profile</Link>
           </li>
-
           <li>
             <button type="button">Settings</button>
           </li>
-
           <li>
-            <button type="button"
-            onClick={handleLogout}
-            >Logout</button>
+            <button type="button" onClick={handleLogout}>
+              Logout
+            </button>
           </li>
         </ul>
       </div>
