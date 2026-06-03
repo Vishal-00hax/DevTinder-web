@@ -2,16 +2,18 @@ import React from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constents";
 import { useEffect, useState } from "react";
-import { addRequests } from "../utils/requetsSlice";
+import { addRequests, removeRequests } from "../utils/requetsSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
 function Requests() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toastMessgae, setToastMessage] = useState("");
   const dispatch = useDispatch();
 
   const requests = useSelector((state) => state.requests);
+  console.log("Requests from Requests.jsx:", requests);
 
   const fetchRequests = async () => {
     try {
@@ -31,6 +33,24 @@ function Requests() {
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  setTimeout(() => {
+    setToastMessage("");
+  }, 3000);
+
+  const handleRequestStatus = async (status, requestId) => {
+    try {
+      const res = await axios.post(
+        BASE_URL + `/request/review/${status}/${requestId}`,
+        {},
+        { withCredentials: true },
+      );
+      dispatch(removeRequests(requestId));
+      setToastMessage(res.data.message);
+    } catch (err) {
+      console.log("Error in reviewing request ", err);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -81,15 +101,30 @@ function Requests() {
               </div>
 
               <div className="card-actions justify-center sm:justify-end mt-4">
-                <button className="btn btn-error">Reject</button>
+                <button
+                  className="btn btn-error"
+                  onClick={() => handleRequestStatus("accepted", request._id)}
+                >
+                  Reject
+                </button>
 
-                <button className="btn btn-primary">Accept</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleRequestStatus("accepted", request._id)}
+                >
+                  Accept
+                </button>
               </div>
             </div>
           </div>
         ))
       ) : (
         <div className="text-center text-lg">No Requests Found</div>
+      )}
+      {toastMessgae && (
+        <div className="toast toast-top toast-center">
+          <div className="alert alert-success">{toastMessgae}</div>
+        </div>
       )}
     </div>
   );
