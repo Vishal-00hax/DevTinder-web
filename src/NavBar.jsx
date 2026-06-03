@@ -56,6 +56,9 @@ function NavBar() {
                 <Link to="/connection">Connections</Link>
               </li>
               <li>
+                <Link to="/requests">Requests</Link>
+              </li>
+              <li>
                 <button type="button" onClick={handleLogout}>
                   Logout
                 </button>
