@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Feed from "./components/Feed";
 import Requests from "./components/Requests";
+import SignUp from "./components/SignUp";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="connection" element={<Connection />} />
           <Route path="requests" element={<Requests />} />
+          <Route path="signup" element={<SignUp />} />
         </Route>
       </Routes>
     </>

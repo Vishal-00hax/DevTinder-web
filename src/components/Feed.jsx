@@ -8,19 +8,30 @@ import { addFeed, appendFeed } from "../utils/feedSlice";
 import UserCard from "./UserCard";
 
 function Feed() {
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const feed = useSelector((store) => store.feed);
 
-  const fetchFeed = async () => {
+  const fetchFeed = async (pageNumber) => {
+    if (loading || !hasMore) return;
     try {
       setLoading(true);
-      const res = await axios.get(BASE_URL + `/user/feed`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}/user/feed?page=${pageNumber}&limit=10`,
+        {
+          withCredentials: true,
+        },
+      );
       const newUsers = res.data.data || [];
-      dispatch(addFeed(newUsers));
+      if (pageNumber === 1) {
+        dispatch(addFeed(newUsers));
+      } else {
+        dispatch(appendFeed(newUsers));
+      }
+      setHasMore(res.data.hasMore);
     } catch (err) {
       console.log("Error Fetching Feed: ", err.response?.data || err.message);
     } finally {
@@ -28,28 +39,57 @@ function Feed() {
     }
   };
 
+  // Initial Load (Component Mount)
   useEffect(() => {
-    fetchFeed();
+    if (!feed) {
+      fetchFeed(1);
+    }
   }, []);
+
+  // Pre-fetch Logic (Watches the feed length)
+  useEffect(() => {
+    if (feed && feed.length <= 2 && hasMore && !loading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchFeed(nextPage);
+    }
+  }, [feed]);
 
   if (!feed) {
     return (
       <div className="flex justify-center my-10">
-        <h1 className="text-xl">Loading...</h1>
+        <h1 className="text-xl">Loading Profiles...</h1>
       </div>
     );
   }
 
-  if (feed.length === 0) {
+  if (feed.length === 0 && !loading) {
     return (
-      <div className="flex justify-center my-10">
-        <h1 className="text-xl font-bold">No More Profiles Available</h1>
+      <div className="flex items-center justify-center min-h-[60vh] px-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-3xl font-bold mb-3">No More Profiles</h1>
+
+          <p className="text-base-content/70 mb-6">
+            You've reviewed all available developer profiles for now. Check back
+            later to discover new connections.
+          </p>
+
+          <div className="badge badge-outline badge-lg">
+            You're all caught up 🎉
+          </div>
+        </div>
       </div>
     );
   }
   return (
     <div className="flex justify-center my-10">
-      <UserCard user={feed[0]} />
+      {feed.length > 0 && <UserCard user={feed[0]} />}
+
+      {loading && page > 1 && (
+        <div className="text-sm text-gray-400 mt-4 absolute -bottom-10">
+          Loading more profiles...
+        </div>
+      )}
     </div>
   );
 }

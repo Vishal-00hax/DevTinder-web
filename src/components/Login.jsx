@@ -1,46 +1,43 @@
-import React from 'react'
-import { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
-import { useDispatch } from 'react-redux';
-import { addUser } from '../utils/userSlice';
-import { BASE_URL } from '../utils/constents';
+import React from "react";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+import { BASE_URL } from "../utils/constents";
+import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [emailId , setEmailId] = useState("");
-  const [password , setPassword] = useState("")
-  const [error , setError] = useState("");
+  const [emailId, setEmailId] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-const handleLogin = async () => {
-
-  try {
-    
-    const res = await axios.post(BASE_URL+"/login",
-      {
-        emailId,
-        password,
-      },
-      { withCredentials: true },
-    );
-    dispatch(addUser(res.data.data));
-    navigate("/")
-    console.log("Login Successfull:", res.data);
-  } catch (err) {
-    setError(err.response?.data || err.message);
-   
-  }
-};
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        BASE_URL + "/login",
+        {
+          emailId,
+          password,
+        },
+        { withCredentials: true },
+      );
+      dispatch(addUser(res.data.data));
+      navigate("/");
+      console.log("Login Successfull:", res.data);
+    } catch (err) {
+      setError(err.response?.data || err.message);
+    }
+  };
   return (
- <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200 px-4 py-10">
-      <div className="card w-full max-w-md bg-base-100 shadow-2xl"> 
+    <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-base-200 px-4 py-10">
+      <div className="card w-full max-w-md bg-base-100 shadow-2xl">
         <div className="card-body">
           {/* Heading */}
           <div className="mb-6 text-center">
-            <h1 className="text-3xl font-bold">
-              Welcome Back
-            </h1>
+            <h1 className="text-3xl font-bold">Welcome Back</h1>
             <p className="mt-2 text-sm text-gray-500">
               Login to continue to your account
             </p>
@@ -48,30 +45,26 @@ const handleLogin = async () => {
           {/* Email */}
           <div className="form-control mb-4">
             <label className="label">
-              <span className="label-text font-medium">
-                Email
-              </span>
+              <span className="label-text font-medium">Email</span>
             </label>
             <input
               type="email"
               placeholder="Enter your email"
               value={emailId}
-              onChange={(e)=>setEmailId(e.target.value)}
+              onChange={(e) => setEmailId(e.target.value)}
               className="input input-bordered w-full"
             />
           </div>
           {/* Password */}
           <div className="form-control mb-2">
             <label className="label">
-              <span className="label-text font-medium">
-                Password
-              </span>
+              <span className="label-text font-medium">Password</span>
             </label>
             <input
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e)=>setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="input input-bordered w-full"
             />
           </div>
@@ -81,7 +74,7 @@ const handleLogin = async () => {
               Forgot password?
             </button>
           </div>
-          {error && <p className='text-center text-red-600'>{error}</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
           {/* Login Button */}
           <button className="btn btn-primary w-full" onClick={handleLogin}>
             Login
@@ -91,14 +84,18 @@ const handleLogin = async () => {
           {/* Signup */}
           <p className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <span className="cursor-pointer font-semibold text-primary hover:underline">
+            <Link
+              to="/signup"
+              className="cursor-pointer font-semibold text-primary hover:underline"
+            >
+              {" "}
               Sign Up
-            </span>
+            </Link>
           </p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
