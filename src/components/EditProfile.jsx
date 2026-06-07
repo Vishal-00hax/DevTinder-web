@@ -7,6 +7,7 @@ import { BASE_URL } from "../utils/constents";
 import UserCard from "./UserCard";
 
 function EditProfile({ profileData, setIsEditing }) {
+  const { _id } = profileData;
   const dispatch = useDispatch();
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -164,6 +165,7 @@ function EditProfile({ profileData, setIsEditing }) {
       <div className="flex justify-center mt-10">
         <UserCard
           user={{
+            _id: _id,
             firstName: firstName,
             lastName: lastName,
             age: age,

@@ -4,12 +4,16 @@ import { BASE_URL } from "../utils/constents";
 import { removeFeed } from "../utils/feedSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function UserCard({ user }) {
   const [requestToast, setRequestToast] = useState("");
   const [error, setError] = useState("");
   const { firstName, lastName, photoUrl, age, skills, gender, _id } = user;
   const dispatch = useDispatch();
+  const loggedInUser = useSelector((store) => store.user);
+  const genralUsers = String(loggedInUser?._id) !== String(_id);
+  console.log("Logged In User ID:", loggedInUser?._id, " | Card ID:", _id);
 
   setTimeout(() => {
     setRequestToast("");
@@ -26,7 +30,7 @@ function UserCard({ user }) {
 
       dispatch(removeFeed(toUserId));
     } catch (err) {
-      setError(err.response?.data || err.message);
+      setError(err.response?.data || err.message || res.message);
     }
   };
 
@@ -49,20 +53,22 @@ function UserCard({ user }) {
         <p>Gender : {gender.toUpperCase() || "-"}</p>
         <p>{skills.join(", ").toUpperCase() || "-"}</p>
         <p></p>
-        <div className="card-actions justify-center">
-          <button
-            className="btn btn-primary"
-            onClick={() => sendRequestStatus("ignored", _id)}
-          >
-            Ingnore
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => sendRequestStatus("interested", _id)}
-          >
-            Send Request
-          </button>
-        </div>
+        {genralUsers && (
+          <div className="card-actions justify-center">
+            <button
+              className="btn btn-primary"
+              onClick={() => sendRequestStatus("ignored", _id)}
+            >
+              Ingnore
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => sendRequestStatus("interested", _id)}
+            >
+              Send Request
+            </button>
+          </div>
+        )}
       </div>
       {requestToast && (
         <div className="toast toast-top toast-center">

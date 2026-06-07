@@ -59,7 +59,7 @@ function Feed() {
   if (!feed) {
     return (
       <div className="flex justify-center my-10">
-        <h1 className="text-xl">Loading Profiles...</h1>
+        <h1 className="text-xl">Loading...</h1>
       </div>
     );
   }
@@ -88,7 +88,7 @@ function Feed() {
 
       {loading && page > 1 && (
         <div className="text-sm text-gray-400 mt-4 absolute -bottom-10">
-          Loading more profiles...
+          Loading...
         </div>
       )}
 
