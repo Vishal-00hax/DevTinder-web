@@ -41,10 +41,6 @@ function EditProfile({ profileData, setIsEditing }) {
       setIsEditing(false); // Close edit mode
     } catch (err) {
       setError(err.response?.data || err.message);
-      console.log(
-        "Error During Edit Profile: ",
-        err.response?.data || err.message,
-      );
     } finally {
       setIsSaving(false); // Unlock the button after request completes
     }

@@ -13,6 +13,12 @@ function Profile() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isPasswordChanging, setIsPasswordChanging] = useState(false);
+  const [passwordtoast, setPasswordToast] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  setTimeout(() => {
+    setPasswordToast("");
+  }, 1000);
 
   const handleLogout = useLogout();
 
@@ -25,15 +31,13 @@ function Profile() {
         { oldPassword, newPassword },
         { withCredentials: true },
       );
-      console.log("Password Change Success: ", res.data);
+
+      setPasswordToast("Password Change Successfully");
       setOldPassword("");
       setNewPassword("");
       setIsEditPassword(false);
     } catch (err) {
-      console.log(
-        "Error During Change Password: ",
-        err.response?.data || err.message,
-      );
+      setPasswordError(err.response?.data || err.message);
     } finally {
       setIsPasswordChanging(false);
     }
@@ -47,6 +51,10 @@ function Profile() {
         </div>
       </div>
     );
+  }
+
+  if (passwordError) {
+    return <div>{passwordError}</div>;
   }
 
   return (
@@ -192,6 +200,11 @@ function Profile() {
           )}
         </div>
       </div>
+      {passwordtoast && (
+        <div className="toast -top toast-center">
+          <div className="alert alert-success">{passwordtoast}</div>
+        </div>
+      )}
     </div>
   );
 }

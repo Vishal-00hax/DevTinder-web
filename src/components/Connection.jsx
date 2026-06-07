@@ -11,7 +11,6 @@ function Connection() {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const connections = useSelector((state) => state.connection);
-  console.log("Connections from Connection.jsx:", connections);
 
   const fetchConnections = async () => {
     try {
@@ -46,15 +45,24 @@ function Connection() {
       {connections?.map((connection) => (
         <div key={connection._id} className="card bg-base-200 shadow-md mb-5">
           <div className="flex flex-col sm:flex-row items-center sm:items-start p-4">
-            <img
-              className="w-24 h-24 rounded-full object-cover border-2 border-base-300"
-              src={
-                connection.fromUserId.photoUrl ||
-                `https://ui-avatars.com/api/?name=${connection.fromUserId.firstName}`
-              }
-              alt="profile"
-            />
-
+            <div className="flex">
+              <img
+                className="w-14 h-14 rounded-full object-cover border-2 border-base-300"
+                src={
+                  connection.fromUserId.photoUrl ||
+                  `https://ui-avatars.com/api/?name=${connection.fromUserId.firstName}`
+                }
+                alt="profile"
+              />
+              <img
+                className="w-14 h-14 rounded-full object-cover border-2 border-base-300"
+                src={
+                  connection.toUserId.photoUrl ||
+                  `https://ui-avatars.com/api/?name=${connection.fromUserId.firstName}`
+                }
+                alt="profile"
+              />
+            </div>
             <div className="flex-1 text-center sm:text-left mt-4 sm:mt-0 sm:ml-5">
               <h2 className="text-xl font-bold">
                 {connection.fromUserId.firstName}{" "}
@@ -69,7 +77,7 @@ function Connection() {
 
               <div className="mt-3">
                 <span className="badge badge-success badge-lg">
-                  {connection.status}
+                  {connection.status === "accepted" ? "Frinds" : ""}
                 </span>
               </div>
             </div>

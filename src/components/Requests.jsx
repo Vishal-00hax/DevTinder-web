@@ -13,7 +13,6 @@ function Requests() {
   const dispatch = useDispatch();
 
   const requests = useSelector((state) => state.requests);
-  console.log("Requests from Requests.jsx:", requests);
 
   const fetchRequests = async () => {
     try {
@@ -36,7 +35,7 @@ function Requests() {
 
   setTimeout(() => {
     setToastMessage("");
-  }, 3000);
+  }, 1000);
 
   const handleRequestStatus = async (status, requestId) => {
     try {
@@ -103,7 +102,7 @@ function Requests() {
               <div className="card-actions justify-center sm:justify-end mt-4">
                 <button
                   className="btn btn-error"
-                  onClick={() => handleRequestStatus("accepted", request._id)}
+                  onClick={() => handleRequestStatus("rejected", request._id)}
                 >
                   Reject
                 </button>

@@ -22,6 +22,7 @@ function SignUp() {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,7 +48,9 @@ function SignUp() {
       const res = await axios.post(BASE_URL + "/signup", payload, {
         withCredentials: true,
       });
-      navigate("/login");
+
+      dispatch(addUser(res.data.data));
+      navigate("/");
     } catch (err) {
       setError(err.response?.data || err.message);
     } finally {

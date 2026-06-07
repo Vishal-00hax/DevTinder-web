@@ -11,6 +11,7 @@ function Feed() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const feed = useSelector((store) => store.feed);
@@ -33,7 +34,7 @@ function Feed() {
       }
       setHasMore(res.data.hasMore);
     } catch (err) {
-      console.log("Error Fetching Feed: ", err.response?.data || err.message);
+      setError(err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -88,6 +89,12 @@ function Feed() {
       {loading && page > 1 && (
         <div className="text-sm text-gray-400 mt-4 absolute -bottom-10">
           Loading more profiles...
+        </div>
+      )}
+
+      {error && (
+        <div className="text-sm text-gray-400 mt-4 absolute -bottom-10">
+          {error}
         </div>
       )}
     </div>
