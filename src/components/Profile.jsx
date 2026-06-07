@@ -47,7 +47,6 @@ function Profile() {
         { oldPassword, newPassword },
         { withCredentials: true },
       );
-      console.log(oldPassword, newPassword);
 
       setPasswordToast("Password Change Successfully");
       setOldPassword("");
