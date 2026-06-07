@@ -30,10 +30,6 @@ function UserCard({ user }) {
     }
   };
 
-  if (error) {
-    <div>{error}</div>;
-  }
-
   return (
     <div className="card bg-base-200 w-96 shadow-sm">
       <figure>
@@ -73,6 +69,7 @@ function UserCard({ user }) {
           <div className="alert alert-success">{requestToast}</div>
         </div>
       )}
+      {error && <p className="text-center text-red-600">{error}</p>}
     </div>
   );
 }

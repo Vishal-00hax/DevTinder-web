@@ -30,12 +30,16 @@ function Connection() {
     fetchConnections();
   }, []);
 
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => {
+      setError("");
+    }, 1000);
+    return clearTimeout(timer);
+  }, [error]);
+
   if (loading) {
     return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
   }
 
   return (
@@ -84,6 +88,13 @@ function Connection() {
           </div>
         </div>
       ))}
+      {error && (
+        <div className="toast -top toast-center">
+          <div className="alert alert-info">
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

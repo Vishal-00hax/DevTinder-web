@@ -55,10 +55,6 @@ function Requests() {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold text-center mb-8">
@@ -125,6 +121,7 @@ function Requests() {
           <div className="alert alert-success">{toastMessgae}</div>
         </div>
       )}
+      {error && <p className="text-center text-red-600">{error}</p>}
     </div>
   );
 }

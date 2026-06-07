@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constents";
@@ -16,9 +16,25 @@ function Profile() {
   const [passwordtoast, setPasswordToast] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  setTimeout(() => {
-    setPasswordToast("");
-  }, 1000);
+  useEffect(() => {
+    if (!passwordtoast) return;
+
+    const timer = setTimeout(() => {
+      setPasswordToast("");
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [passwordtoast]);
+
+  useEffect(() => {
+    if (!passwordError) return;
+
+    const timer = setTimeout(() => {
+      setPasswordError("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [passwordError]);
 
   const handleLogout = useLogout();
 
@@ -31,13 +47,14 @@ function Profile() {
         { oldPassword, newPassword },
         { withCredentials: true },
       );
+      console.log(oldPassword, newPassword);
 
       setPasswordToast("Password Change Successfully");
       setOldPassword("");
       setNewPassword("");
       setIsEditPassword(false);
     } catch (err) {
-      setPasswordError(err.response?.data || err.message);
+      setPasswordError(err.response?.data?.message || err.message);
     } finally {
       setIsPasswordChanging(false);
     }
@@ -51,10 +68,6 @@ function Profile() {
         </div>
       </div>
     );
-  }
-
-  if (passwordError) {
-    return <div>{passwordError}</div>;
   }
 
   return (
@@ -203,6 +216,13 @@ function Profile() {
       {passwordtoast && (
         <div className="toast -top toast-center">
           <div className="alert alert-success">{passwordtoast}</div>
+        </div>
+      )}
+      {passwordError && (
+        <div className="toast -top toast-center">
+          <div className="alert alert-info">
+            <span>{passwordError}</span>
+          </div>
         </div>
       )}
     </div>
