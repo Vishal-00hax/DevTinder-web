@@ -1,1 +1,1 @@
-export const BASE_URL = "https://devtribe-i6k6.onrender.com";
+export const BASE_URL = "https://api.vishaldevtribe.com";

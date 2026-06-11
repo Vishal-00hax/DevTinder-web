@@ -134,9 +134,9 @@ function Profile() {
                   Technical Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {profileData.skills?.map((skill, index) => (
+                  {profileData.skills?.map((skill) => (
                     <span
-                      key={index}
+                      key={skill}
                       className="badge badge-primary badge-outline badge-lg px-4 py-3 text-xs font-bold uppercase"
                     >
                       {skill}
