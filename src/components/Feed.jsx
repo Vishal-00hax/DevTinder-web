@@ -57,9 +57,15 @@ function Feed() {
   }, [feed]);
 
   if (!feed) {
+    <div className="flex justify-center my-10">
+      <h1 className="text-xl">Loading...</h1>
+    </div>;
+  }
+
+  if (!user) {
     return (
       <div className="flex justify-center my-10">
-        <h1 className="text-xl">Loading...</h1>
+        <h1 className="text-xl">Please Login</h1>
       </div>
     );
   }
