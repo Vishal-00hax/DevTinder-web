@@ -13,7 +13,6 @@ function UserCard({ user }) {
   const dispatch = useDispatch();
   const loggedInUser = useSelector((store) => store.user);
   const genralUsers = String(loggedInUser?._id) !== String(_id);
-  console.log("Logged In User ID:", loggedInUser?._id, " | Card ID:", _id);
 
   setTimeout(() => {
     setRequestToast("");

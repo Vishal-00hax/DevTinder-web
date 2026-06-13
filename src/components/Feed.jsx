@@ -56,10 +56,12 @@ function Feed() {
     }
   }, [feed]);
 
-  if (!feed) {
-    <div className="flex justify-center my-10">
-      <h1 className="text-xl">Loading...</h1>
-    </div>;
+  if (!feed && loading) {
+    return (
+      <div className="flex justify-center my-10">
+        <h1 className="text-xl">Loading...</h1>
+      </div>
+    );
   }
 
   if (!user) {
@@ -70,7 +72,7 @@ function Feed() {
     );
   }
 
-  if (feed.length === 0 && !loading) {
+  if ((feed?.length ?? 0) === 0 && !loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] px-4">
         <div className="text-center max-w-md">
@@ -90,7 +92,7 @@ function Feed() {
   }
   return (
     <div className="flex justify-center my-10">
-      {feed.length > 0 && <UserCard user={feed[0]} />}
+      {feed?.length > 0 && <UserCard user={feed[0]} />}
 
       {loading && page > 1 && (
         <div className="text-sm text-gray-400 mt-4 absolute -bottom-10">
