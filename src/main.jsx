@@ -8,13 +8,13 @@ import appStore from "./utils/appStore";
 
 const root = document.getElementById("root");
 ReactDOM.createRoot(root).render(
-  <StrictMode>
-    <div data-theme="dark">
-      <Provider store={appStore}>
-        <BrowserRouter basename="/">
-          <App />
-        </BrowserRouter>
-      </Provider>
-    </div>
-  </StrictMode>,
+  // <StrictMode>
+  <div data-theme="dark">
+    <Provider store={appStore}>
+      <BrowserRouter basename="/">
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </div>,
+  // </StrictMode>,
 );
