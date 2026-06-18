@@ -6,6 +6,8 @@ import Profile from "./components/Profile";
 import Feed from "./components/Feed";
 import Requests from "./components/Requests";
 import SignUp from "./components/SignUp";
+import Premium from "./components/Premium";
+import { PaymentSuccess, PaymentCancel } from "./components/PaymentStatus";
 
 function App() {
   return (
@@ -18,6 +20,9 @@ function App() {
           <Route path="connection" element={<Connection />} />
           <Route path="requests" element={<Requests />} />
           <Route path="signup" element={<SignUp />} />
+          <Route path="premium" element={<Premium />} />
+          <Route path="success" element={<PaymentSuccess />} />
+          <Route path="cancel" element={<PaymentCancel />} />
         </Route>
       </Routes>
     </>

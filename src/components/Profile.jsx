@@ -105,6 +105,11 @@ function Profile() {
                   <p className="mt-1 text-sm font-medium text-gray-500">
                     {profileData.emailId}
                   </p>
+                  {profileData.membershipType && (
+                    <p className="mt-1 text-sm font-medium text-gray-500">
+                      {profileData.membershipType} Membership
+                    </p>
+                  )}
                 </div>
               </div>
 
