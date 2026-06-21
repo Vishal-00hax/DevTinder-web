@@ -62,6 +62,9 @@ function NavBar() {
                 <Link to="/premium">Premium</Link>
               </li>
               <li>
+                <Link to="/orders">Orders</Link>
+              </li>
+              <li>
                 <button type="button" onClick={handleLogout}>
                   Logout
                 </button>

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constents";
 import useLogout from "../hooks/useLogout";
 import EditProfile from "./EditProfile"; // Adjust path if needed
+import { Link } from "react-router";
 
 function Profile() {
   const profileData = useSelector((store) => store.user);

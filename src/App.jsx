@@ -7,6 +7,7 @@ import Feed from "./components/Feed";
 import Requests from "./components/Requests";
 import SignUp from "./components/SignUp";
 import Premium from "./components/Premium";
+import Orders from "./components/Orders";
 import { PaymentSuccess, PaymentCancel } from "./components/PaymentStatus";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="premium" element={<Premium />} />
           <Route path="success" element={<PaymentSuccess />} />
           <Route path="cancel" element={<PaymentCancel />} />
+          <Route path="orders" element={<Orders />} />
         </Route>
       </Routes>
     </>
