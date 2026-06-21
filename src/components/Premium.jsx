@@ -3,11 +3,11 @@ import { BASE_URL } from "../utils/constents";
 import axios from "axios";
 
 function Premium() {
-  const handlePayment = async (planType, price) => {
+  const handlePayment = async (planType) => {
     try {
       const res = await axios.post(
         `${BASE_URL}/payment/create-order`,
-        { planType, price },
+        { planType },
         { withCredentials: true },
       );
       // Get stripe url from backend we will navigate user on this url
@@ -28,7 +28,7 @@ function Premium() {
           <div className="justify-end card-actions">
             <button
               className="btn btn-primary"
-              onClick={() => handlePayment("Bronz", 140)}
+              onClick={() => handlePayment("Bronz")}
             >
               Buy Now At 140
             </button>
@@ -43,7 +43,7 @@ function Premium() {
           <div className="justify-end card-actions">
             <button
               className="btn btn-primary"
-              onClick={() => handlePayment("Silver", 160)}
+              onClick={() => handlePayment("Silver")}
             >
               Buy Now At 160
             </button>
@@ -58,7 +58,7 @@ function Premium() {
           <div className="justify-end card-actions">
             <button
               className="btn btn-primary"
-              onClick={() => handlePayment("Gold", 200)}
+              onClick={() => handlePayment("Gold")}
             >
               Buy Now At 200
             </button>
