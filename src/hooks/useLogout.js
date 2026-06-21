@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { removeUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constents";
+import { clearOrders } from "../utils/orderSlice";
 
 function useLogout() {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ function useLogout() {
     try {
       await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
       dispatch(removeUser());
+      dispatch(clearOrders());
       navigate("/login");
     } catch (err) {
       console.log("LogOut Error: ", err.response?.data || err.message);

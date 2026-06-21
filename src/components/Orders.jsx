@@ -2,17 +2,21 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constents";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { addOrder } from "../utils/orderSlice";
 
 function Orders() {
-  const [orders, setOrders] = useState([]);
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const orders = useSelector((store) => store.order);
 
   const getOrders = async () => {
     try {
       const res = await axios.get(BASE_URL + `/user/orders`, {
         withCredentials: true,
       });
-      setOrders(res.data.data);
+      dispatch(addOrder(res.data.data));
     } catch (err) {
       setError(err.message);
     }
@@ -25,7 +29,7 @@ function Orders() {
   if (error) {
     return (
       <div className="p-4 text-center max-w-md mx-auto mt-10 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-mono">
-        Error: {error}
+        Error: {error.message || error}
       </div>
     );
   }
@@ -44,7 +48,7 @@ function Orders() {
             </p>
           </div>
 
-          {orders.length === 0 ? (
+          {!orders || orders.length === 0 ? (
             <div className="p-12 text-center border border-white/5 bg-white/1 rounded-xl">
               <p className="text-sm text-white/40">No transactions recorded.</p>
             </div>
