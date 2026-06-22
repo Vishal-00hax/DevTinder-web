@@ -19,6 +19,13 @@ function Orders() {
       });
       dispatch(addOrder(res.data.data));
     } catch (err) {
+      if (err.response || err.response.status === 404) {
+        return (
+          <h2 className="text-xl font-bold tracking-tight text-white uppercase">
+            Orders not found<span className="text-[#5ed29c]">.</span>
+          </h2>
+        );
+      }
       setError(err.message);
     }
   };
@@ -32,6 +39,14 @@ function Orders() {
       <div className="p-4 text-center max-w-md mx-auto mt-10 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-mono">
         Error: {error.message || error}
       </div>
+    );
+  }
+
+  if (orders.length === 0 || !orders) {
+    return (
+      <h2 className="text-xl font-bold tracking-tight text-white uppercase">
+        Orders not found<span className="text-[#5ed29c]">.</span>
+      </h2>
     );
   }
 
