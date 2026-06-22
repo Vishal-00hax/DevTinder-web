@@ -9,6 +9,7 @@ import { addOrder } from "../utils/orderSlice";
 function Orders() {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+  const todaysDate = new Date();
   const orders = useSelector((store) => store.order);
 
   const getOrders = async () => {
@@ -68,7 +69,11 @@ function Orders() {
                           ID: {order._id.substring(0, 8).toUpperCase()}
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#5ed29c] bg-[#5ed29c]/5 border border-[#5ed29c]/10 px-2 py-0.5 rounded-md flex items-center gap-1"></span>
+                      <span className="text-[10px] font-mono text-[#5ed29c] bg-[#5ed29c]/5 border border-[#5ed29c]/10 px-2 py-0.5 rounded-md flex items-center gap-1">
+                        {todaysDate > order.membershipExpireDate
+                          ? "Expired"
+                          : "Active"}
+                      </span>
                     </div>
 
                     {/* Pricing Matrix details */}
