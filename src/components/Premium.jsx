@@ -3,6 +3,7 @@ import { BASE_URL } from "../utils/constents";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Premium() {
   const [isPremium, setIsPremium] = useState(false);
@@ -85,19 +86,66 @@ function Premium() {
   return (
     <>
       {isPremium === true ? (
-        <div className="max-w-md mx-auto mt-16">
-          <div className="bg-base-100 border border-success/20 rounded-3xl p-8 text-center shadow-xl">
-            <div className="text-6xl mb-4">🎉</div>
+        <div className="max-w-md mx-auto mt-16 px-4">
+          <div className="relative overflow-hidden bg-base-100 border border-success/30 rounded-3xl p-8 text-center shadow-2xl transition-all duration-300 hover:shadow-success/10 group">
+            {/* Decorative Premium Subtle Background Glow (Uses safe solid colors with low opacity instead of gradients) */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-success/10 rounded-full blur-3xl pointer-events-none transition-transform duration-500 group-hover:scale-150"></div>
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none transition-transform duration-500 group-hover:scale-150"></div>
 
-            <h2 className="text-3xl font-bold mb-3">Premium Active</h2>
+            {/* Modern Animated Icon Container */}
+            <div className="relative mx-auto w-20 h-20 bg-success/10 rounded-2xl flex items-center justify-center mb-6 border border-success/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
+              <span
+                className="text-4xl animate-bounce"
+                style={{ animationDuration: "3s" }}
+              >
+                🎉
+              </span>
+              {/* Sparkle micro-dot */}
+              <span className="absolute top-2 right-2 w-2 h-2 bg-success rounded-full animate-ping"></span>
+            </div>
 
-            <p className="text-base-content/70 mb-6">
-              Your premium membership is already active and ready to use.
+            {/* Typography - Changed from text-gradient to solid, reliable text-success */}
+            <h2 className="text-3xl font-black tracking-tight mb-2 text-success">
+              Premium Activated!
+            </h2>
+
+            <p className="text-base-content/70 text-sm md:text-base max-w-sm mx-auto mb-6 leading-relaxed">
+              Thank you for upgrading. Your premium membership is fully active.
+              Enjoy your unlocked superpowers!
             </p>
 
-            <div className="badge badge-success badge-lg">
-              Active Subscription
+            {/* Status Metadata Badge Container */}
+            <div className="bg-base-200/60 border border-base-300 rounded-xl p-4 mb-8 flex items-center justify-between text-left">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
+                  Status
+                </p>
+                <p className="text-sm font-bold text-success flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                  Active & Billing
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
+                  Plan Tier
+                </p>
+                <p className="text-sm font-bold text-base-content">
+                  Gold Member
+                </p>
+              </div>
             </div>
+
+            {/* Primary Action Button */}
+            <Link to="/profile">
+              <button className="btn btn-success text-success-content w-full font-bold uppercase tracking-wider shadow-lg shadow-success/20 hover:shadow-xl hover:shadow-success/30 transition-all duration-300">
+                Go to Dashboard
+              </button>
+            </Link>
+
+            {/* Secondary Subtext link */}
+            <p className="text-xs text-base-content/40 mt-4 cursor-pointer hover:text-base-content/70 transition-colors underline underline-offset-4">
+              View billing history or manage subscription
+            </p>
           </div>
         </div>
       ) : (

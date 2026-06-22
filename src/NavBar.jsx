@@ -64,11 +64,6 @@ function NavBar() {
               <li>
                 <Link to="/orders">Orders</Link>
               </li>
-              <li>
-                <button type="button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
             </ul>
           </div>
         )}
