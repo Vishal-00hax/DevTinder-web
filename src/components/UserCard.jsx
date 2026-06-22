@@ -37,10 +37,6 @@ function UserCard({ user }) {
     }
   };
 
-  if (error) {
-    return <p className="text-center text-red-600">{error}</p>;
-  }
-
   return (
     <>
       {requestLimitToast === true ? (
@@ -86,6 +82,7 @@ function UserCard({ user }) {
               <div className="alert alert-success">{requestToast}</div>
             </div>
           )}
+          {error && <p className="text-center text-red-600">{error}</p>}
         </div>
       )}
     </>
