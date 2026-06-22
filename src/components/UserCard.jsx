@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 
 function UserCard({ user }) {
   const [requestToast, setRequestToast] = useState("");
+  const [requestLimitToast, setRequestLimitToast] = useState(false);
   const [error, setError] = useState("");
   const { firstName, lastName, photoUrl, age, skills, gender, _id } = user;
   const dispatch = useDispatch();
@@ -29,53 +30,65 @@ function UserCard({ user }) {
 
       dispatch(removeFeed(toUserId));
     } catch (err) {
+      if (err.response || err.response.status === 403) {
+        setRequestLimitToast(true);
+      }
       setError(err.response?.data || err.message || res.message);
     }
   };
 
+  if (error) {
+    return <p className="text-center text-red-600">{error}</p>;
+  }
+
   return (
-    <div className="card bg-base-200 w-96 shadow-sm">
-      <figure>
-        <img
-          src={
-            photoUrl ||
-            `https://ui-avatars.com/api/?name=${firstName}+${lastName}`
-          }
-          alt="photo"
-        />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">
-          {firstName || "-"} {lastName || "-"}
-        </h2>
-        <p>Age : {age}</p>
-        <p>Gender : {gender.toUpperCase() || "-"}</p>
-        <p>{skills.join(", ").toUpperCase() || "-"}</p>
-        <p></p>
-        {genralUsers && (
-          <div className="card-actions justify-center">
-            <button
-              className="btn btn-primary"
-              onClick={() => sendRequestStatus("ignored", _id)}
-            >
-              Ingnore
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => sendRequestStatus("interested", _id)}
-            >
-              Send Request
-            </button>
+    <>
+      {requestLimitToast === true ? (
+        <p>You hit today's requests limit.</p>
+      ) : (
+        <div className="card bg-base-200 w-96 shadow-sm">
+          <figure>
+            <img
+              src={
+                photoUrl ||
+                `https://ui-avatars.com/api/?name=${firstName}+${lastName}`
+              }
+              alt="photo"
+            />
+          </figure>
+          <div className="card-body">
+            <h2 className="card-title">
+              {firstName || "-"} {lastName || "-"}
+            </h2>
+            <p>Age : {age}</p>
+            <p>Gender : {gender.toUpperCase() || "-"}</p>
+            <p>{skills.join(", ").toUpperCase() || "-"}</p>
+            <p></p>
+            {genralUsers && (
+              <div className="card-actions justify-center">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => sendRequestStatus("ignored", _id)}
+                >
+                  Ingnore
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => sendRequestStatus("interested", _id)}
+                >
+                  Send Request
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      {requestToast && (
-        <div className="toast toast-top toast-center">
-          <div className="alert alert-success">{requestToast}</div>
+          {requestToast && (
+            <div className="toast toast-top toast-center">
+              <div className="alert alert-success">{requestToast}</div>
+            </div>
+          )}
         </div>
       )}
-      {error && <p className="text-center text-red-600">{error}</p>}
-    </div>
+    </>
   );
 }
 
