@@ -5,6 +5,7 @@ import { removeFeed } from "../utils/feedSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 function UserCard({ user }) {
   const [requestToast, setRequestToast] = useState("");
@@ -14,6 +15,7 @@ function UserCard({ user }) {
   const dispatch = useDispatch();
   const loggedInUser = useSelector((store) => store.user);
   const genralUsers = String(loggedInUser?._id) !== String(_id);
+  const navigate = useNavigate();
 
   setTimeout(() => {
     setRequestToast("");
@@ -40,7 +42,59 @@ function UserCard({ user }) {
   return (
     <>
       {requestLimitToast === true ? (
-        <p>You hit today's requests limit.</p>
+        <div className="card w-96 bg-base-200 shadow-xl border border-base-300">
+          <div className="card-body items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-warning/20 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8 text-warning"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v3m0 4h.01M10.29 3.86l-7.2 12.48A2 2 0 004.8 19h14.4a2 2 0 001.71-2.66l-7.2-12.48a2 2 0 00-3.42 0z"
+                />
+              </svg>
+            </div>
+
+            <h2 className="card-title mt-4 text-xl">
+              Daily Request Limit Reached
+            </h2>
+
+            <p className="text-base-content/70 leading-relaxed">
+              You've used all available connection requests for today. New
+              requests will be available again tomorrow.
+            </p>
+
+            <div className="divider my-1"></div>
+
+            <div className="bg-base-100 rounded-xl p-4 border border-base-300 w-full">
+              <p className="font-medium">
+                Want to connect with more developers?
+              </p>
+
+              <p className="text-sm text-base-content/70 mt-2">
+                Upgrade to Premium and unlock higher daily request limits,
+                priority visibility, and faster networking opportunities.
+              </p>
+            </div>
+
+            <div className="badge badge-warning badge-outline mt-3">
+              Request Limit Exhausted
+            </div>
+
+            <button
+              className="btn btn-primary btn-wide mt-4"
+              onClick={() => navigate("/premium")}
+            >
+              Explore Premium Plans
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="card bg-base-200 w-96 shadow-sm">
           <figure>

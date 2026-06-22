@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { removeUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constents";
 import { clearOrders } from "../utils/orderSlice";
+import { clearFeed } from "../utils/feedSlice";
 
 function useLogout() {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ function useLogout() {
       await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
       dispatch(removeUser());
       dispatch(clearOrders());
+      dispatch(clearFeed());
       navigate("/login");
     } catch (err) {
       console.log("LogOut Error: ", err.response?.data || err.message);
