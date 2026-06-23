@@ -14,8 +14,8 @@ function Premium() {
       price: "140",
       features: [
         "20 Connection Requests / Day",
-        "Standard Profile Visibility",
-        "Limited Profile Views (100/day)",
+        "Enhanced Profile Visibility",
+        "Unlimited Chat",
         "Email Support",
       ],
       isPopular: false,
@@ -28,7 +28,8 @@ function Premium() {
       features: [
         "50 Connection Requests / Day",
         "Priority Profile Visibility",
-        "Unlimited Profile Views",
+        "Unlimited Chat",
+        "Priority Email Support",
         "24/7 Premium Support",
       ],
       isPopular: true,
@@ -43,7 +44,7 @@ function Premium() {
       features: [
         "35 Connection Requests / Day",
         "Enhanced Profile Visibility",
-        "Unlimited Profile Views",
+        "Unlimited Chat",
         "Priority Email Support",
       ],
       isPopular: false,

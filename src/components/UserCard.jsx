@@ -11,7 +11,16 @@ function UserCard({ user }) {
   const [requestToast, setRequestToast] = useState("");
   const [requestLimitToast, setRequestLimitToast] = useState(false);
   const [error, setError] = useState("");
-  const { firstName, lastName, photoUrl, age, skills, gender, _id } = user;
+  const {
+    firstName,
+    lastName,
+    photoUrl,
+    age,
+    skills,
+    gender,
+    _id,
+    membershipType,
+  } = user;
   const dispatch = useDispatch();
   const loggedInUser = useSelector((store) => store.user);
   const genralUsers = String(loggedInUser?._id) !== String(_id);
@@ -110,10 +119,10 @@ function UserCard({ user }) {
             <h2 className="card-title">
               {firstName || "-"} {lastName || "-"}
             </h2>
+            {membershipType && <p>{membershipType} Membership</p>}
             <p>Age : {age}</p>
             <p>Gender : {gender.toUpperCase() || "-"}</p>
             <p>{skills.join(", ").toUpperCase() || "-"}</p>
-            <p></p>
             {genralUsers && (
               <div className="card-actions justify-center">
                 <button
