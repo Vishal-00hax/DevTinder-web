@@ -126,14 +126,6 @@ function Premium() {
                   Active & Billing
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
-                  Plan Tier
-                </p>
-                <p className="text-sm font-bold text-base-content">
-                  Gold Member
-                </p>
-              </div>
             </div>
 
             {/* Primary Action Button */}
