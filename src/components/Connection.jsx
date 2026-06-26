@@ -129,30 +129,32 @@ function Connection() {
                 </div>
 
                 {/* Direct Actions Container Block */}
-                <div className="w-full sm:w-auto shrink-0 flex justify-center sm:justify-end">
-                  <Link
-                    to={`/chats/${showUser._id}`}
-                    className="w-full sm:w-auto"
-                  >
-                    <button className="btn btn-primary btn-sm md:btn-md w-full sm:w-auto font-bold uppercase tracking-wider gap-2 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 px-6">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                      </svg>
-                      Chats
-                    </button>
-                  </Link>
-                </div>
+                {loggedInUser?.isPremium && (
+                  <div className="w-full sm:w-auto shrink-0 flex justify-center sm:justify-end">
+                    <Link
+                      to={`/chats/${showUser._id}`}
+                      className="w-full sm:w-auto"
+                    >
+                      <button className="btn btn-primary btn-sm md:btn-md w-full sm:w-auto font-bold uppercase tracking-wider gap-2 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 px-6">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                        Chats
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           );
