@@ -55,38 +55,29 @@ function Chats() {
     socketRef.current = createSocketConnection();
 
     socketRef.current.on("connect", () => {
+      // 1. Join room after connection
+      socketRef.current.emit("joinChat", { userId, chatUserId, firstName });
+      // 2. Fetch history after joining
       setPage(1);
       getUserChats(1);
     });
-    // creating websocket connection
-    socketRef.current.emit("joinChat", { userId, chatUserId, firstName });
-    // status listeners
+
+    socketRef.current.on("messageReceived", (data) => {
+      setMessage((prev) => {
+        // If the incoming message ID is already in the list, ignore it
+        if (prev.some((m) => m._id === data._id)) return prev;
+        return [...prev, data];
+      });
+    });
+
     socketRef.current.on("presenceStatus", ({ isOnline }) =>
       setIsOnline(isOnline),
     );
     socketRef.current.on("userOnline", (data) => {
       if (data.userId === chatUserId) setIsOnline(true);
     });
-    // Message listener
-    socketRef.current.on("messageReceived", (data) => {
-      setMessage((prevMessage) => {
-        if (prevMessage.some((m) => m._id === data._id)) return prevMessage;
+    socketRef.current.on("messageError", (data) => setError(data.error));
 
-        return [
-          ...prevMessage,
-          {
-            _id: data._id,
-            firstName: data.firstName,
-            newMessage: data.newMessage,
-            timeStamp: data.timeStamp,
-          },
-        ];
-      });
-    });
-    // Error listener
-    socketRef.current.on("messageError", (data) => {
-      setError(data.error);
-    });
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
     };
@@ -145,12 +136,6 @@ function Chats() {
       setLoadingChats(false);
     }
   };
-
-  // Inital run for fetching chats
-  useEffect(() => {
-    setPage(1);
-    getUserChats(1);
-  }, [chatUserId]);
 
   // Second run for chats when the page changes;
   useEffect(() => {
