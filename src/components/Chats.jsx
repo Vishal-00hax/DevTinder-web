@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { createSocketConnection } from "../utils/socket";
 import { useSelector } from "react-redux";
@@ -10,28 +10,68 @@ function Chats() {
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState("");
+  const [isOnline, setIsOnline] = useState(false);
+
   const { chatUserId } = useParams();
   const user = useSelector((store) => store.user);
   const userId = user?._id;
   const firstName = user?.firstName;
 
+  const socketRef = useRef(null);
+  const messageEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [message]);
+
   useEffect(() => {
     if (!userId) return;
-    const socket = createSocketConnection();
-    socket.emit("joinChat", { userId, chatUserId, firstName });
-    socket.on("messageReceived", ({ firstName, newMessage }) => {
-      setMessage((pervMessage) => [...pervMessage, { firstName, newMessage }]);
+    socketRef.current = createSocketConnection();
+    // creating websocket connection
+    socketRef.current.emit("joinChat", { userId, chatUserId, firstName });
+    // status listeners
+    socketRef.current.on("presenceStatus", ({ isOnline }) =>
+      setIsOnline(isOnline),
+    );
+    socketRef.current.on("userOnline", (data) => {
+      if (data.userId === chatUserId) setIsOnline(true);
+    });
+    // Message listener
+    socketRef.current.on(
+      "messageReceived",
+      ({ firstName, newMessage, timeStamp }) => {
+        setMessage((pervMessage) => [
+          ...pervMessage,
+          { firstName, newMessage, timeStamp },
+        ]);
+      },
+    );
+    // Error listener
+    socketRef.current.on("messageError", (data) => {
+      setError(data.error);
     });
     return () => {
-      socket.disconnect();
+      if (socketRef.current) socketRef.current.disconnect();
     };
   }, [userId, chatUserId, firstName]);
 
   // Send messages on "sendMessage" event to backend
   const sendMessage = () => {
-    const socket = createSocketConnection();
-    if (!socket) return;
-    socket.emit("sendMessage", { userId, chatUserId, firstName, newMessage });
+    if (!socketRef.current || !newMessage.trim()) return;
+    socketRef.current.emit("sendMessage", {
+      userId,
+      chatUserId,
+      firstName,
+      newMessage,
+    });
+    setMessage((perv) => [
+      ...perv,
+      { firstName, newMessage, timeStamp: new Date().toISOString() },
+    ]);
     setNewMessage("");
   };
 
@@ -46,12 +86,13 @@ function Chats() {
           firstName: msg?.senderId?.firstName,
           lastName: msg?.senderId?.lastName,
           newMessage: msg?.text,
-          timeStemp: msg?.createdAt,
+          timeStamp: msg?.createdAt,
         };
       });
 
       setMessage(chatMessages);
     } catch (err) {
+      setError(err.response?.data || err.response?.data?.message);
       console.log(err.response?.data);
       console.log(err.response?.data?.message);
       console.log(err.message);
@@ -77,28 +118,34 @@ function Chats() {
       {/* Chat Header Section */}
       <div className="px-4 md:px-6 py-4 bg-base-100 border-b border-base-300 flex items-center justify-between shadow-sm shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
+          <div
+            className={`w-2.5 h-2.5 rounded-full ${isOnline ? "bg-success animate-pulse" : "bg-base-300"}`}
+          />
           <div>
             <h2 className="text-base md:text-lg font-black tracking-tight text-base-content">
               Chats
             </h2>
             <p className="text-[10px] md:text-xs text-base-content/50 font-medium">
-              Active Session
+              {isOnline ? "Active Now" : "Offline"}
             </p>
           </div>
         </div>
-        <span className="badge badge-xs md:badge-sm badge-success/10 text-success border-none font-bold uppercase tracking-wider px-2.5 py-2">
-          Live
-        </span>
+        {isOnline && (
+          <span className="badge badge-xs md:badge-sm badge-success/10 text-success border-none font-bold uppercase tracking-wider px-2.5 py-2">
+            Live
+          </span>
+        )}
       </div>
 
       {/* Chat Messages Stream Viewport Area */}
       {/* This container handles the isolated scrolling logic */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-base-200/40 space-y-3 custom-scrollbar">
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 md:p-6 bg-base-200/40 space-y-3 custom-scrollbar"
+      >
         {message?.map((chat, index) => {
           if (!chat) return null;
 
-          // Conditional assignment: Checks if the message was sent by the logged-in user
           const isOwnMessage = chat.firstName === firstName;
 
           return (
@@ -106,12 +153,10 @@ function Chats() {
               key={index}
               className={`chat ${isOwnMessage ? "chat-end" : "chat-start"} transition-all duration-200 animate-fadeIn`}
             >
-              {/* Sender Name Title */}
               <div className="chat-header text-[10px] opacity-40 font-bold mb-0.5 px-1 capitalize">
                 {chat.firstName}
               </div>
 
-              {/* Dynamic Message Bubble Box */}
               <div
                 className={`chat-bubble rounded-2xl text-xs md:text-sm font-medium shadow-sm max-w-[85%] md:max-w-md wrap-break-word ${
                   isOwnMessage
@@ -122,14 +167,17 @@ function Chats() {
                 {chat.newMessage}
               </div>
               <div className="chat-footer text-[10px] opacity-50 mt-1">
-                {formatTime(chat.timeStemp)}
+                {formatTime(chat.timeStamp)}
               </div>
             </div>
           );
         })}
+
+        {/* Purana <div ref={messageEndRef} /> yahan se DELETE kar dijiye */}
       </div>
 
       {/* Chat Input Console Form Footer Block */}
+
       <div className="p-3 md:p-4 bg-base-100 border-t border-base-300 shrink-0">
         <form
           onSubmit={(e) => {
@@ -164,6 +212,13 @@ function Chats() {
           </button>
         </form>
       </div>
+      {error && (
+        <div className="toast -top toast-center">
+          <div className="alert alert-info">
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
