@@ -93,10 +93,6 @@ function Chats() {
       newMessage,
     });
     isFetchingOlder.current = false;
-    setMessage((perv) => [
-      ...perv,
-      { firstName, newMessage, timeStamp: new Date().toISOString() },
-    ]);
     setNewMessage("");
   };
 
@@ -111,7 +107,7 @@ function Chats() {
       }
 
       const res = await axios.get(
-        `${BASE_URL}/user-chats/chat/${chatUserId}?page=${pageNumber}&limit=5`,
+        `${BASE_URL}/user-chats/chat/${chatUserId}?page=${pageNumber}&limit=20`,
         { withCredentials: true },
       );
 
