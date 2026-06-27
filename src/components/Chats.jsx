@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useParams } from "react-router";
 import { createSocketConnection } from "../utils/socket";
 import { useSelector } from "react-redux";
@@ -12,6 +12,11 @@ function Chats() {
   const [error, setError] = useState("");
   const [isOnline, setIsOnline] = useState(false);
 
+  // Pagenation states
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingChats, setLoadingChats] = useState(false);
+
   const { chatUserId } = useParams();
   const user = useSelector((store) => store.user);
   const userId = user?._id;
@@ -20,9 +25,26 @@ function Chats() {
   const socketRef = useRef(null);
   const messageEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const previousScrollHeight = useRef(0);
+  const isFetchingOlder = useRef(false);
+
+  // Rem
+  useLayoutEffect(() => {
+    if (chatContainerRef.current) {
+      if (isFetchingOlder.current) {
+        const currentScrollHeight = chatContainerRef.current.scrollHeight;
+        chatContainerRef.current.scrollTop =
+          currentScrollHeight - previousScrollHeight.current;
+        isFetchingOlder.current = false;
+      } else {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
+    }
+  }, [message]);
 
   useEffect(() => {
-    if (chatContainerRef.current) {
+    if (chatContainerRef.current && page === 1) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
@@ -68,6 +90,7 @@ function Chats() {
       firstName,
       newMessage,
     });
+    isFetchingOlder.current = false;
     setMessage((perv) => [
       ...perv,
       { firstName, newMessage, timeStamp: new Date().toISOString() },
@@ -75,33 +98,64 @@ function Chats() {
     setNewMessage("");
   };
 
-  const getUserChats = async () => {
+  const getUserChats = async (pageNumber = 1) => {
+    if (loadingChats) return;
     try {
-      const res = await axios.get(BASE_URL + `/user-chats/chat/${chatUserId}`, {
-        withCredentials: true,
-      });
+      setLoadingChats(true);
 
-      const chatMessages = res.data?.data?.message.map((msg) => {
-        return {
-          firstName: msg?.senderId?.firstName,
-          lastName: msg?.senderId?.lastName,
-          newMessage: msg?.text,
-          timeStamp: msg?.createdAt,
-        };
-      });
+      // ऊंचाई सेव करें
+      if (chatContainerRef.current && pageNumber > 1) {
+        previousScrollHeight.current = chatContainerRef.current.scrollHeight;
+        isFetchingOlder.current = true;
+      }
 
-      setMessage(chatMessages);
+      const res = await axios.get(
+        `${BASE_URL}/user-chats/chat/${chatUserId}?page=${pageNumber}&limit=20`,
+        { withCredentials: true },
+      );
+
+      const chatMessages = res.data?.data?.message.map((msg) => ({
+        firstName: msg?.senderId?.firstName,
+        lastName: msg?.senderId?.lastName,
+        newMessage: msg?.text,
+        timeStamp: msg?.createdAt,
+      }));
+
+      if (pageNumber === 1) {
+        setMessage(chatMessages);
+      } else {
+        setMessage((prev) => [...chatMessages, ...prev]);
+      }
+
+      setHasMore(res.data.hasMore);
     } catch (err) {
-      setError(err.response?.data || err.response?.data?.message);
-      console.log(err.response?.data);
-      console.log(err.response?.data?.message);
-      console.log(err.message);
+      console.log(err);
+    } finally {
+      setLoadingChats(false);
     }
   };
 
+  // Inital run for fetching chats
   useEffect(() => {
-    getUserChats();
-  }, []);
+    setPage(1);
+    getUserChats(1);
+  }, [chatUserId]);
+
+  // Second run for chats when the page changes;
+  useEffect(() => {
+    if (page > 1) {
+      getUserChats(page);
+    }
+  }, [page]);
+
+  // Scroll Listener to detect when user hits the top
+  const handleScroll = (e) => {
+    const { scrollTop } = e.target;
+
+    if (scrollTop < 50 && hasMore && !loadingChats) {
+      setPage((prev) => prev + 1);
+    }
+  };
 
   // This converts "2026-06-26T17:38:10.713Z" to "5:38 PM"
   const formatTime = (isoString) => {
@@ -141,8 +195,14 @@ function Chats() {
       {/* This container handles the isolated scrolling logic */}
       <div
         ref={chatContainerRef}
+        onScroll={handleScroll}
         className="flex-1 overflow-y-auto p-4 md:p-6 bg-base-200/40 space-y-3 custom-scrollbar"
       >
+        {loadingChats && page > 1 && (
+          <div className="text-center text-xs opacity-50 py-2">
+            Loading older messages...
+          </div>
+        )}
         {message?.map((chat, index) => {
           if (!chat) return null;
 
