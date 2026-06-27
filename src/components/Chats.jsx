@@ -53,6 +53,11 @@ function Chats() {
   useEffect(() => {
     if (!userId) return;
     socketRef.current = createSocketConnection();
+
+    socketRef.current.on("connect", () => {
+      setPage(1);
+      getUserChats(1);
+    });
     // creating websocket connection
     socketRef.current.emit("joinChat", { userId, chatUserId, firstName });
     // status listeners
@@ -63,15 +68,21 @@ function Chats() {
       if (data.userId === chatUserId) setIsOnline(true);
     });
     // Message listener
-    socketRef.current.on(
-      "messageReceived",
-      ({ firstName, newMessage, timeStamp }) => {
-        setMessage((pervMessage) => [
-          ...pervMessage,
-          { firstName, newMessage, timeStamp },
-        ]);
-      },
-    );
+    socketRef.current.on("messageReceived", (data) => {
+      setMessage((prevMessage) => {
+        if (prevMessage.some((m) => m._id === data._id)) return prevMessage;
+
+        return [
+          ...prevMessage,
+          {
+            _id: data._id,
+            firstName: data.firstName,
+            newMessage: data.newMessage,
+            timeStamp: data.timeStamp,
+          },
+        ];
+      });
+    });
     // Error listener
     socketRef.current.on("messageError", (data) => {
       setError(data.error);
@@ -103,18 +114,18 @@ function Chats() {
     try {
       setLoadingChats(true);
 
-      // ऊंचाई सेव करें
       if (chatContainerRef.current && pageNumber > 1) {
         previousScrollHeight.current = chatContainerRef.current.scrollHeight;
         isFetchingOlder.current = true;
       }
 
       const res = await axios.get(
-        `${BASE_URL}/user-chats/chat/${chatUserId}?page=${pageNumber}&limit=20`,
+        `${BASE_URL}/user-chats/chat/${chatUserId}?page=${pageNumber}&limit=5`,
         { withCredentials: true },
       );
 
       const chatMessages = res.data?.data?.message.map((msg) => ({
+        _id: msg._id,
         firstName: msg?.senderId?.firstName,
         lastName: msg?.senderId?.lastName,
         newMessage: msg?.text,
@@ -151,9 +162,8 @@ function Chats() {
   // Scroll Listener to detect when user hits the top
   const handleScroll = (e) => {
     const { scrollTop } = e.target;
-
-    if (scrollTop < 50 && hasMore && !loadingChats) {
-      setPage((prev) => prev + 1);
+    if (scrollTop === 0 && hasMore && !loadingChats) {
+      setPage((perv) => perv + 1);
     }
   };
 
@@ -210,7 +220,7 @@ function Chats() {
 
           return (
             <div
-              key={index}
+              key={chat._id || Math.random()}
               className={`chat ${isOwnMessage ? "chat-end" : "chat-start"} transition-all duration-200 animate-fadeIn`}
             >
               <div className="chat-header text-[10px] opacity-40 font-bold mb-0.5 px-1 capitalize">
